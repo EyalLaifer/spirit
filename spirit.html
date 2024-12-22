@@ -1,0 +1,184 @@
+import React, { useState } from 'react';
+import { Card, CardHeader, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+
+const MoodGame = () => {
+  const scenarios = [
+    {
+      id: 1,
+      description: "דני, תלמיד כיתה ה', נכנס לכיתה מאוחר היום. הוא נראה עייף במיוחד, שערו מבולגן, ובגדיו מרושלים. במהלך השיעור הראשון הוא נרדם על השולחן, וכשהעירו אותו, התפרץ בבכי. כשניסית לשוחח איתו, הוא סירב לספר מה קרה ורק אמר שהוא לא ישן כל הלילה.",
+      mood: "מצוקה",
+      signs: ["עייפות קיצונית", "הזנחה עצמית", "התפרצות רגשית"],
+      recommendations: ["שיחה פרטית רגישה", "יצירת קשר עם ההורים", "הפניה ליועצת"]
+    },
+    {
+      id: 2,
+      description: "מיכל, תלמידה מצטיינת, החלה לאחרונה להראות שינוי קיצוני בהתנהגותה. היא מסרבת להשתתף בדיונים כיתתיים, למרות שבעבר הייתה פעילה מאוד. בהפסקות היא יושבת לבד, מתעלמת מחברותיה הטובות, ובמבחן האחרון קיבלה ציון נמוך באופן חריג.",
+      mood: "דיכאון",
+      signs: ["ירידה בהישגים", "התבודדות חברתית", "שינוי התנהגותי קיצוני"],
+      recommendations: ["שיחה עם היועצת", "מעקב אחר התנהגות", "תמיכה לימודית"]
+    },
+    {
+      id: 3,
+      description: "יוסי מגיע לבית הספר עם חיוך ענק ואנרגיה מתפרצת. הוא רץ במסדרונות, מחבק את כל מי שהוא רואה, ומספר בהתלהבות על תוכניות הקיץ שלו. בכיתה הוא קופץ ממקומו כל כמה דקות, מתנדב לכל משימה, ומדבר במהירות ובקול רם מהרגיל.",
+      mood: "התרגשות יתר",
+      signs: ["אנרגיה מוגברת", "דיבור מהיר", "התנהגות אימפולסיבית"],
+      recommendations: ["הכוונה לפעילות ממוקדת", "מתן תפקיד אחראי", "איזון הפעילות"]
+    },
+    {
+      id: 4,
+      description: "רותי, תלמידת כיתה ו', מגיעה לבית הספר ומסרבת להיכנס לכיתה. היא נצמדת לקיר במסדרון, נושמת בכבדות, ידיה רועדות והיא אומרת שהיא מפחדת להיכנס כי יש לה היום הרצאה מול הכיתה. היא מתחילה לבכות ומתלוננת על כאב בטן.",
+      mood: "חרדה",
+      signs: ["תגובה פיזיולוגית", "הימנעות", "מחשבות שליליות"],
+      recommendations: ["טכניקות נשימה והרגעה", "בניית ביטחון הדרגתי", "ליווי אישי"]
+    },
+    {
+      id: 5,
+      description: "אמיר חוזר מההפסקה כועס מאוד. הוא טורק את הדלת, זורק את התיק על הרצפה וצועק על חבריו לכיתה. כשמנסים לברר מה קרה, הוא מספר בכעס שילדים מכיתה אחרת לקחו לו את הכדור ולא הסכימו להחזיר. הוא מאיים שיחזיר להם בהפסקה הבאה.",
+      mood: "כעס",
+      signs: ["אלימות פיזית כלפי חפצים", "צעקות", "איומים"],
+      recommendations: ["הרגעה מיידית", "תיווך בין הצדדים", "לימוד פתרון קונפליקטים"]
+    }
+  ];
+
+  const [currentScenario, setCurrentScenario] = useState(0);
+  const [showAnswer, setShowAnswer] = useState(false);
+  const [score, setScore] = useState(0);
+  const [gameOver, setGameOver] = useState(false);
+  const [selectedMood, setSelectedMood] = useState("");
+
+  const moodOptions = ["מצוקה", "דיכאון", "התרגשות יתר", "חרדה", "כעס", "שמחה"];
+
+  const handleAnswer = (mood) => {
+    setSelectedMood(mood);
+    setShowAnswer(true);
+    if (mood === scenarios[currentScenario].mood) {
+      setScore(score + 20);
+    }
+  };
+
+  const getEmoji = (finalScore) => {
+    if (finalScore >= 80) return "🤩";
+    if (finalScore >= 60) return "😊";
+    if (finalScore >= 40) return "😕 💪";
+    return "😢 ✨";
+  };
+
+  const getFeedback = (finalScore) => {
+    if (finalScore === 100) return "וואו! תוצאה מושלמת! את/ה מומחה/ית בזיהוי מצבי רוח!";
+    if (finalScore >= 80) return "כל הכבוד! תוצאה מצוינת!";
+    if (finalScore >= 60) return "יפה מאוד! המשך/י כך!";
+    if (finalScore >= 40) return "יש לך פוטנציאל! עם עוד קצת תרגול תצליח/י יותר!";
+    return "אל דאגה! עם קצת תרגול נוסף תשתפר/י בוודאות!";
+  };
+
+  const nextScenario = () => {
+    if (currentScenario < scenarios.length - 1) {
+      setCurrentScenario(currentScenario + 1);
+      setShowAnswer(false);
+      setSelectedMood("");
+    } else {
+      setGameOver(true);
+    }
+  };
+
+  const restartGame = () => {
+    setCurrentScenario(0);
+    setShowAnswer(false);
+    setScore(0);
+    setGameOver(false);
+    setSelectedMood("");
+  };
+
+  if (gameOver) {
+    return (
+      <Card className="w-full max-w-2xl mx-auto p-6">
+        <CardContent className="text-center space-y-8">
+          <div className="text-9xl mb-8">
+            {getEmoji(score)}
+          </div>
+          <div className="space-y-4">
+            <h1 className="text-4xl font-bold mb-4">
+              הציון הסופי שלך:
+            </h1>
+            <p className="text-6xl font-bold text-primary mb-4">
+              {score}
+            </p>
+            <p className="text-xl text-gray-600 mb-8">
+              {getFeedback(score)}
+            </p>
+            <Button onClick={restartGame} className="text-lg px-8 py-4">
+              שחק שוב
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className="w-full max-w-2xl mx-auto">
+      <CardHeader className="text-center">
+        <h2 className="text-2xl font-bold">זיהוי מצבי רוח של תלמידים</h2>
+        <p className="text-gray-500">תרחיש {currentScenario + 1} מתוך {scenarios.length}</p>
+        <p className="text-gray-500">ניקוד: {score}</p>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <div className="bg-gray-50 p-6 rounded-lg">
+          <p className="text-lg leading-relaxed">{scenarios[currentScenario].description}</p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+          {moodOptions.map((mood) => (
+            <Button
+              key={mood}
+              onClick={() => handleAnswer(mood)}
+              disabled={showAnswer}
+              variant={selectedMood === mood ? "secondary" : "outline"}
+              className="w-full py-4"
+            >
+              {mood}
+            </Button>
+          ))}
+        </div>
+
+        {showAnswer && (
+          <div className="space-y-4">
+            <Alert variant={selectedMood === scenarios[currentScenario].mood ? "success" : "error"}>
+              <AlertDescription className="text-lg">
+                {selectedMood === scenarios[currentScenario].mood 
+                  ? "כל הכבוד! זיהית נכון את מצב הרוח."
+                  : `התשובה הנכונה היא: ${scenarios[currentScenario].mood}`}
+              </AlertDescription>
+            </Alert>
+
+            <div className="bg-gray-50 p-4 rounded-lg space-y-2">
+              <h3 className="font-bold text-lg">סימנים לזיהוי:</h3>
+              <ul className="list-disc list-inside">
+                {scenarios[currentScenario].signs.map((sign, index) => (
+                  <li key={index} className="text-lg">{sign}</li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="bg-gray-50 p-4 rounded-lg space-y-2">
+              <h3 className="font-bold text-lg">המלצות לטיפול:</h3>
+              <ul className="list-disc list-inside">
+                {scenarios[currentScenario].recommendations.map((rec, index) => (
+                  <li key={index} className="text-lg">{rec}</li>
+                ))}
+              </ul>
+            </div>
+
+            <Button onClick={nextScenario} className="w-full py-4 text-lg">
+              {currentScenario < scenarios.length - 1 ? "המשך לתרחיש הבא" : "סיים משחק"}
+            </Button>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
+
+export default MoodGame;
